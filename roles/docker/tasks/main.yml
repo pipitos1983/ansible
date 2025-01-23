@@ -1,0 +1,95 @@
+---
+
+- name: Stop docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: stopped
+  become: true
+  
+- name: Stop docker.socket
+  ansible.builtin.systemd:
+    name: docker.socket
+    state: stopped
+  become: true
+
+- name: remove conflicts (Ubuntu)
+  apt:
+    pkg:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - docker-compose-v2
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+    purge: true
+  become: true
+  when: ansible_distribution == 'Ubuntu'
+
+- name: remove conflicts (Debian)
+  apt:
+    pkg:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+    purge: true
+  become: true
+  when: ansible_distribution == 'Debian'
+
+- name: add GPG key (Ubuntu)
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+  become: true
+
+- name: add GPG key (Debian)
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+  when: ansible_distribution == 'Debian'
+  become: true
+    
+
+- name: Add Docker repository to apt (Ubuntu)
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    filename: docker
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+  become: true
+
+- name: Add Docker repository to apt (Debian)
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    filename: docker
+    state: present
+  when: ansible_distribution == 'Debian'
+  become: true
+
+
+- name: install docker
+  apt:
+    pkg:
+      - containerd.io
+      - docker-ce-cli
+      - docker-ce
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    update_cache: yes
+  become: true
+
+- name: copy docker config
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: Restart service docker
+  service:
+    name: docker
+    state: restarted

@@ -1,0 +1,6 @@
+---
+- name: add pubkey
+  authorized_key:
+    user: user
+    state: present
+    key: "{{ lookup('file', 'id_rsa.pub') }}"

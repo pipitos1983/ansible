@@ -1,0 +1,13 @@
+---
+
+- name: add sudoer config to user
+  copy:
+    src: 90-cloud-init-users
+    dest: /etc/sudoers.d/90-cloud-init-users
+
+- name: remove user from sudo group
+  command: "gpasswd -d  user sudo"
+  register: command_result
+  changed_when: "not 'is not a member of' in command_result.stderr"
+  failed_when: false
+

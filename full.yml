@@ -1,0 +1,12 @@
+---
+
+- name: start role based playbook
+  hosts: vm
+  become: yes
+  gather_facts: true
+  roles:
+    - { role: user,   tags: user }
+    - { role: base_soft,   tags: soft }
+    - { role: docker,   tags: docker }
+    - { role: docker-compose,   tags: docker-compose }
+    - { role: key,   tags: pubkey }

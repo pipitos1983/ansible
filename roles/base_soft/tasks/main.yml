@@ -1,0 +1,22 @@
+---
+
+- name: Update apt package list
+  become: true
+  apt:
+    update_cache: yes
+
+
+- name: install_base_soft
+  apt:
+    pkg:
+      - mc
+      - net-tools
+      - dnsutils
+      - nmap
+      - curl
+      - apt-transport-https
+      - ca-certificates
+      - gnupg-agent
+      - software-properties-common
+      - traceroute
+
