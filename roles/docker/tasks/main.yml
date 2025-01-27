@@ -5,13 +5,8 @@
     name: docker
     state: stopped
   become: true
+  ignore_errors: yes
   
-- name: Stop docker.socket
-  ansible.builtin.systemd:
-    name: docker.socket
-    state: stopped
-  become: true
-
 - name: remove conflicts (Ubuntu)
   apt:
     pkg:
